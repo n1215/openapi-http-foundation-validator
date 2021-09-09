@@ -282,3 +282,127 @@ class GetHelloTest extends TestCase
     }
 }
 ```
+
+## Usage for Laravel Middleware
+
+### 1. create a Middleware class
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use N1215\OpenApiValidation\HttpFoundation\Validators;
+use N1215\OpenApiValidation\OperationAddress;
+use N1215\OpenApiValidation\RequestValidationFailed;
+use N1215\OpenApiValidation\ResponseValidationFailed;
+use Symfony\Component\HttpFoundation\Response;
+
+class ValidateWithOpenApi
+{
+    private string $basePath = '/';
+
+    private Validators $validators;
+
+    private ResponseFactory $responseFactory;
+
+    public function __construct(Validators $validators, ResponseFactory $responseFactory)
+    {
+        $this->validators = $validators;
+        $this->responseFactory = $responseFactory;
+    }
+
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return mixed
+     */
+    public function handle($request, Closure $next)
+    {
+        try {
+            $this->validators->getRequestValidator()->validate($request);
+        } catch (RequestValidationFailed $e) {
+            return $this->responseFactory->json(
+                [
+                    'message' =>  $e->getMessage(),
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+
+        $response = $next($request);
+        assert($response instanceof Response);
+
+        $pattern = '/^' . preg_quote($this->basePath, '/') . '/';
+        $relativePath = '/' . preg_replace($pattern, '', $request->getPathInfo());
+        try {
+            $this->validators->getResponseValidator()->validate(
+                new OperationAddress(
+                    $relativePath,
+                    $request->method()
+                ),
+                $response
+            );
+        } catch (ResponseValidationFailed $e) {
+            return $this->responseFactory->json(
+                [
+                    'message' =>  $e->getMessage(),
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+
+        return $response;
+    }
+}
+```
+
+### 2. register to the service container
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Providers;
+
+use App\Http\Middleware\ValidateWithOpenApi;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\ServiceProvider;
+use N1215\OpenApiValidation\HttpFoundation\ValidatorBuilder;
+use N1215\OpenApiValidation\HttpFoundation\Validators;
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->app->singleton(Validators::class, function () {
+            $psr17Factory = new Psr17Factory();
+            $httpMessageFactory = new PsrHttpFactory(
+                $psr17Factory,
+                $psr17Factory,
+                $psr17Factory,
+                $psr17Factory
+            );
+            return (new ValidatorBuilder($httpMessageFactory))
+                ->fromYamlFile(__DIR__ . '/openapi.yaml')
+                ->setSimpleCache(Cache::store(), 3600)
+                ->getValidators();
+        });
+        $this->app->singleton(ValidateWithOpenApi::class);
+    }
+}
+```
