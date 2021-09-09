@@ -1,0 +1,60 @@
+{
+    "name": "n1215/openapi-http-foundation-validator",
+    "type": "library",
+    "require": {
+        "php": ">=7.4",
+        "league/openapi-psr7-validator": "^0.15.2",
+        "psr/cache": "^1.0",
+        "psr/simple-cache": "^1.0",
+        "symfony/psr-http-message-bridge": "^2.1"
+    },
+    "require-dev": {
+        "nyholm/psr7": "^1.4",
+        "phpstan/phpstan": "^0.12.98",
+        "phpunit/phpunit": "^9.5",
+        "squizlabs/php_codesniffer": "^3.6",
+        "yiisoft/cache": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "N1215\\OpenApiValidation\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "N1215\\OpenApiValidation\\": "tests"
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "n1215",
+            "email": "knakae1215@gmail.com"
+        }
+    ],
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "prefer-stable": true,
+    "scripts": {
+        "analyse": [
+            "./vendor/bin/phpstan analyse --memory-limit=1024M"
+        ],
+        "lint": [
+            "./vendor/bin/phpcs --standard=phpcs.xml ./"
+        ],
+        "lint:fix": [
+            "./vendor/bin/phpcbf --standard=phpcs.xml ./"
+        ],
+        "test": [
+            "./vendor/bin/phpunit"
+        ],
+        "coverage": [
+            "rm -rf ./dist",
+            "mkdir ./dist",
+            "php -d pcov.enabled=1 ./vendor/bin/phpunit --coverage-html ./dist/coverage"
+        ]
+    }
+}
