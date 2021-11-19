@@ -84,4 +84,4 @@ $responseValidator->validate(
 ```
 
 ## Usage for Laravel
-see https://github.com/openapi-laravel-validator
+see https://github.com/n1215/openapi-laravel-validator
