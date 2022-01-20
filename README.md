@@ -68,7 +68,7 @@ $validators = $validatorBuilder->getValidators();
 /** @var \Symfony\Component\HttpFoundation\Request $request */
 /** @var \N1215\OpenApiValidation\HttpFoundation\RequestValidatorInterface $requestValidator */
 $requestValidator = $validators->getRequestValidator();
-$responseValidator->validate($request);
+$requestValidator->validate($request);
 ```
 
 ### 6. validate response
