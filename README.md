@@ -2,7 +2,7 @@
 OpenAPI(v3) Validators for Symfony http-foundation, using `league/openapi-psr7-validator` and `symfony/psr-http-message-bridge`.
 
 ## Requirements
-- PHP >= 7.4
+- PHP >= 8.1
 
 ## Installation
 
