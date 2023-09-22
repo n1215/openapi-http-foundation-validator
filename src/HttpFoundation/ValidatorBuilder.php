@@ -14,12 +14,10 @@ class ValidatorBuilder
 {
     protected Psr7ValidatorBuilder $psr7ValidatorBuilder;
 
-    protected HttpMessageFactoryInterface $httpMessageFactory;
-
-    public function __construct(HttpMessageFactoryInterface $httpMessageFactory)
-    {
+    public function __construct(
+        private readonly HttpMessageFactoryInterface $httpMessageFactory
+    ) {
         $this->psr7ValidatorBuilder = new Psr7ValidatorBuilder();
-        $this->httpMessageFactory = $httpMessageFactory;
     }
 
     /**

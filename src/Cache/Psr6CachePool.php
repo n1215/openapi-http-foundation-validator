@@ -12,11 +12,9 @@ use Psr\SimpleCache\InvalidArgumentException as PSR16InvalidArgumentException;
 
 class Psr6CachePool implements CacheItemPoolInterface
 {
-    protected CacheInterface $cache;
-
-    public function __construct(CacheInterface $cache)
-    {
-        $this->cache = $cache;
+    public function __construct(
+        private readonly CacheInterface $cache
+    ) {
     }
 
     /**
@@ -34,7 +32,7 @@ class Psr6CachePool implements CacheItemPoolInterface
 
     /**
      * @param string[] $keys
-     * @return array<mixed>
+     * @return array<CacheItemInterface>
      */
     public function getItems(array $keys = []): array
     {
@@ -74,7 +72,9 @@ class Psr6CachePool implements CacheItemPoolInterface
     }
 
     /**
-     * @inheritDoc
+     * @param string[] $keys
+     * @return bool
+     * @throws \Psr\Cache\InvalidArgumentException&\Throwable
      */
     public function deleteItems(array $keys): bool
     {

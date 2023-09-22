@@ -7,5 +7,6 @@ nbproject
 .settings
 composer.lock
 /vendor
+.phpunit.cache
 .phpunit.result.cache
 /dist

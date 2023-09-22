@@ -2,5 +2,4 @@ parameters:
     paths:
         - src
         - tests
-    # The level 8 is the highest level
-    level: 8
+    level: 9

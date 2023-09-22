@@ -8,20 +8,11 @@ use cebe\openapi\spec\OpenApi;
 
 class Validators
 {
-    private OpenApi $schema;
-
-    private RequestValidator $requestValidator;
-
-    private ResponseValidator $responseValidator;
-
     public function __construct(
-        OpenApi $schema,
-        RequestValidator $requestValidator,
-        ResponseValidator $responseValidator
+        private readonly OpenApi $schema,
+        private readonly RequestValidator $requestValidator,
+        private readonly ResponseValidator $responseValidator
     ) {
-        $this->schema = $schema;
-        $this->requestValidator = $requestValidator;
-        $this->responseValidator = $responseValidator;
     }
 
     public function getSchema(): OpenApi

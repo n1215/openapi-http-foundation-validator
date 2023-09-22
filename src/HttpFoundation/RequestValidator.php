@@ -14,16 +14,10 @@ final class RequestValidator implements RequestValidatorInterface
 {
     private bool $isEnabled = true;
 
-    private HttpMessageFactoryInterface $psrHttpFactory;
-
-    private Psr7ServerRequestValidator $psr7ServerRequestValidator;
-
     public function __construct(
-        HttpMessageFactoryInterface $psrHttpFactory,
-        Psr7ServerRequestValidator $psr7ServerRequestValidator
+        private readonly HttpMessageFactoryInterface $psrHttpFactory,
+        private readonly Psr7ServerRequestValidator $psr7ServerRequestValidator
     ) {
-        $this->psrHttpFactory = $psrHttpFactory;
-        $this->psr7ServerRequestValidator = $psr7ServerRequestValidator;
     }
 
     /**

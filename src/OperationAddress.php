@@ -6,14 +6,10 @@ namespace N1215\OpenApiValidation;
 
 class OperationAddress
 {
-    protected string $path;
-
-    protected string $method;
-
-    public function __construct(string $path, string $method)
-    {
-        $this->path = $path;
-        $this->method = $method;
+    public function __construct(
+        protected readonly string $path,
+        protected string $method
+    ) {
     }
 
     public function path(): string

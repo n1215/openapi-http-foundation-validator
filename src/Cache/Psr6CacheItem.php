@@ -12,25 +12,16 @@ use Psr\Cache\CacheItemInterface;
 
 class Psr6CacheItem implements CacheItemInterface
 {
-    protected string $key;
-
-    /**
-     * @var mixed
-     */
-    protected $value;
-
-    protected ?DateTimeInterface $expiration;
-
     /**
      * @param string $key
      * @param mixed $value
      * @param DateTimeInterface|null $expiration
      */
-    public function __construct(string $key, $value, ?DateTimeInterface $expiration = null)
-    {
-        $this->key = $key;
-        $this->value = $value;
-        $this->expiration = $expiration;
+    public function __construct(
+        private readonly string $key,
+        private mixed $value,
+        private ?DateTimeInterface $expiration = null
+    ) {
     }
 
     /**
@@ -44,7 +35,7 @@ class Psr6CacheItem implements CacheItemInterface
     /**
      * @inheritDoc
      */
-    public function get()
+    public function get(): mixed
     {
         return $this->value;
     }
@@ -60,7 +51,7 @@ class Psr6CacheItem implements CacheItemInterface
     /**
      * @inheritDoc
      */
-    public function set($value): self
+    public function set($value): static
     {
         $this->value = $value;
         return $this;
@@ -69,7 +60,7 @@ class Psr6CacheItem implements CacheItemInterface
     /**
      * @inheritDoc
      */
-    public function expiresAt($expiration): self
+    public function expiresAt($expiration): static
     {
         $this->expiration = $expiration;
         return $this;
@@ -78,13 +69,17 @@ class Psr6CacheItem implements CacheItemInterface
     /**
      * @inheritDoc
      */
-    public function expiresAfter($time): self
+    public function expiresAfter($time): static
     {
         if (is_int($time)) {
             if ($time <= 0) {
                 throw new InvalidArgumentException('$time should be a positive integer, DateInterval, or null.');
             }
-            $this->expiration = (new DateTimeImmutable())->add(DateInterval::createFromDateString("{$time} seconds"));
+            $interval = DateInterval::createFromDateString("$time seconds");
+            if ($interval === false) {
+                throw new InvalidArgumentException('Failed to parse DateInterval.');
+            }
+            $this->expiration = (new DateTimeImmutable())->add($interval);
         } elseif ($time instanceof DateInterval) {
             $this->expiration = (new DateTimeImmutable())->add($time);
         } else {

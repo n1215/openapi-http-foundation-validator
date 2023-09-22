@@ -16,16 +16,10 @@ final class ResponseValidator implements ResponseValidatorInterface
 {
     private bool $isEnabled = true;
 
-    private HttpMessageFactoryInterface $psrHttpFactory;
-
-    private Psr7ResponseValidator $psr7ResponseValidator;
-
     public function __construct(
-        HttpMessageFactoryInterface $psrHttpFactory,
-        Psr7ResponseValidator $psr7ResponseValidator
+        private readonly HttpMessageFactoryInterface $psrHttpFactory,
+        private readonly Psr7ResponseValidator $psr7ResponseValidator
     ) {
-        $this->psrHttpFactory = $psrHttpFactory;
-        $this->psr7ResponseValidator = $psr7ResponseValidator;
     }
 
     /**
